@@ -47,12 +47,25 @@ def displayWordCount(wordcount):
     for key in sortedkeys:
         infostring += key+':'+str(wordcount[key])+'\n'
     
+    createInfoWindow(infostring)
+
+#displays window with infostring an ok button and save button
+def createInfoWindow(infostring):
     infoWindow = tkinter.Tk()
     infoWindow.wm_title('Words in Comments')
-    infoEntry = tkinter.Label(infoWindow, text=infostring)
-    infoEntry.pack()
+    
+    infoEntry = tkinter.Text(infoWindow)
+    infoEntry.insert(tkinter.INSERT,infostring)
+    infoEntry.grid(row=0,columnspan=2)
+    
+    saveButton = tkinter.Button(infoWindow, text='save to file', command=saveWordList(infostring))
+    saveButton.grid(row=1)
+    
     infoWindow.mainloop()
-    #tkinter.messagebox.showinfo('words in comments',infostring)
+
+#saves saveString to file
+def saveWordList(saveString):
+    pass
 
 r=praw.Reddit(user_agent = 'linux:pythonscript:v1.0 by /u/rooxo')
 
