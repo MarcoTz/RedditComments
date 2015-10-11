@@ -2,6 +2,7 @@ import praw
 import tkinter
 import tkinter.messagebox
 import tkinter.filedialog
+import string
     
 #get thread by URL
 def threadByUrl(threadUrl):
@@ -21,7 +22,11 @@ def getWordCounts(post,includeMoreComments=False):
         
     for comment in praw.helpers.flatten_tree(post.comments):
         if hasattr(comment,'body'):
-            words = str(comment.body.encode('utf-8'))[2:-1].split()
+            commentBody = str(comment.body.encode('utf-8'))[2:-1]
+            commentBody = commentBody.replace('\\n',' ')
+            #add additional characters to be removed as needed
+            commentBody = ''.join(c for c in commentBody if c not in ('!',',','.',';','?','[',']','{','}','(',')'))
+            words = commentBody.split()
             for word in words:
                 if word in wordcount:
                     wordcount[word] = wordcount[word]+1
