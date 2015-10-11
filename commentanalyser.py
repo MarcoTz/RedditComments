@@ -1,14 +1,7 @@
 import praw
 import tkinter
 import tkinter.messagebox
-
-#analyses comments in entered thread, buttonpressed event
-def analyseComments():
-    if linkEntry.get() is not None:
-        post = threadByUrl(linkEntry.get())
-        if post is not None:
-            wordcount = getWordCounts(post,moreCommentsChecked.get())
-            displayWordCount(wordcount)
+import tkinter.filedialog
     
 #get thread by URL
 def threadByUrl(threadUrl):
@@ -47,42 +40,44 @@ def displayWordCount(wordcount):
     for key in sortedkeys:
         infostring += key+':'+str(wordcount[key])+'\n'
     
-    createInfoWindow(infostring)
-
-#displays window with infostring an ok button and save button
-def createInfoWindow(infostring):
-    infoWindow = tkinter.Tk()
-    infoWindow.wm_title('Words in Comments')
+    infoText.insert(tkinter.INSERT,infostring)
     
-    infoEntry = tkinter.Text(infoWindow)
-    infoEntry.insert(tkinter.INSERT,infostring)
-    infoEntry.grid(row=0,columnspan=2)
+
+#buttonpressed events
+#saves wordlist to file
+def saveWordList():
+    wordlist = infoText.get()
+    savefile = tkinter.filedialog.asksaveasfilename(defaultextension='txt')
     
-    saveButton = tkinter.Button(infoWindow, text='save to file', command=saveWordList(infostring))
-    saveButton.grid(row=1)
-    
-    infoWindow.mainloop()
+#analyses comments in entered thread
+def analyseComments():
+    if linkEntry.get() is not None:
+        post = threadByUrl(linkEntry.get())
+        if post is not None:
+            wordcount = getWordCounts(post,moreCommentsChecked.get())
+            displayWordCount(wordcount)
 
-#saves saveString to file
-def saveWordList(saveString):
-    pass
-
-r=praw.Reddit(user_agent = 'linux:pythonscript:v1.0 by /u/rooxo')
-
+#mainwindow
 mainWindow = tkinter.Tk()
 mainWindow.wm_title('Reddit comment analizer')
-
 explanationLabel = tkinter.Label(mainWindow, text='Enter link to thread:')
 explanationLabel.grid(row=0)
-
 linkEntry = tkinter.Entry(mainWindow)
 linkEntry.grid(row=1,column=0)
-
 submit = tkinter.Button(mainWindow, text='analyse comments', command=analyseComments)
 submit.grid(row=1,column=1)
-
 moreCommentsChecked = tkinter.IntVar()
 moreComments = tkinter.Checkbutton(mainWindow, text='Include "More Comments"', variable=moreCommentsChecked)
 moreComments.grid(row=2)
 
+#infoWindow
+infoWindow = tkinter.Frame(master=mainWindow)
+#infoWindow.wm_title('Words in Comments') 
+infoText = tkinter.Text(infoWindow)
+infoText.grid(row=0,columnspan=2)
+saveButton = tkinter.Button(infoWindow, text='save to file', command=saveWordList)
+saveButton.grid(row=1)
+
+r=praw.Reddit(user_agent = 'linux:pythonscript:v1.0 by /u/rooxo')
 mainWindow.mainloop()
+infoWindow.mainloop()
