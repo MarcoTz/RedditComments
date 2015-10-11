@@ -47,8 +47,11 @@ def displayWordCount(wordcount):
 #events
 #saves wordlist to file
 def saveWordList():
-    wordlist = infoText.get()
-    savefile = tkinter.filedialog.asksaveasfilename(defaultextension='txt')
+    wordlist = infoText.get(1.0,tkinter.END)
+    filename = tkinter.filedialog.asksaveasfilename(defaultextension='txt')
+    savefile = open(filename,'w')
+    wordlist=wordlist.replace('\t','')
+    savefile.write(wordlist)
     
 #analyses comments in entered thread
 def analyseComments():
@@ -76,8 +79,11 @@ moreComments.grid(row=2)
 
 #infoWindow
 infoWindow = tkinter.Toplevel(master=mainWindow)
-infoWindow.wm_title('Words in Comments') 
-infoText = tkinter.Text(infoWindow)
+infoWindow.wm_title('Words in Comments')
+infoScrollbar = tkinter.Scrollbar(infoWindow)
+infoText = tkinter.Text(infoWindow,yscrollcommand=infoScrollbar.set)
+infoScrollbar.grid(row=0,column=2,sticky='ns')
+infoScrollbar.config(command=infoText.yview)
 infoText.grid(row=0,columnspan=2)
 saveButton = tkinter.Button(infoWindow, text='save to file', command=saveWordList)
 saveButton.grid(row=1,column=0)
