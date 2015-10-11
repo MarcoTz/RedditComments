@@ -38,12 +38,13 @@ def displayWordCount(wordcount):
     sortedkeys.reverse()
     
     for key in sortedkeys:
-        infostring += key+':'+str(wordcount[key])+'\n'
+        infostring += key+'\t=\t'+str(wordcount[key])+'\n'
     
-    infoText.insert(tkinter.INSERT,infostring)
-    
+    infoText.delete(1.0)
+    infoText.insert(1.0,infostring)
+    infoWindow.deiconify()
 
-#buttonpressed events
+#events
 #saves wordlist to file
 def saveWordList():
     wordlist = infoText.get()
@@ -56,6 +57,9 @@ def analyseComments():
         if post is not None:
             wordcount = getWordCounts(post,moreCommentsChecked.get())
             displayWordCount(wordcount)
+            
+def hideInfo():
+    infoWindow.withdraw()
 
 #mainwindow
 mainWindow = tkinter.Tk()
@@ -71,13 +75,17 @@ moreComments = tkinter.Checkbutton(mainWindow, text='Include "More Comments"', v
 moreComments.grid(row=2)
 
 #infoWindow
-infoWindow = tkinter.Frame(master=mainWindow)
-#infoWindow.wm_title('Words in Comments') 
+infoWindow = tkinter.Toplevel(master=mainWindow)
+infoWindow.wm_title('Words in Comments') 
 infoText = tkinter.Text(infoWindow)
 infoText.grid(row=0,columnspan=2)
 saveButton = tkinter.Button(infoWindow, text='save to file', command=saveWordList)
-saveButton.grid(row=1)
+saveButton.grid(row=1,column=0)
+okButton = tkinter.Button(infoWindow, text='Ok', command=hideInfo)
+okButton.grid(row=1,column=1)
+infoWindow.protocol('WM_DELETE_WINDOW',hideInfo)
 
 r=praw.Reddit(user_agent = 'linux:pythonscript:v1.0 by /u/rooxo')
+mainWindow.after(1,hideInfo)
 mainWindow.mainloop()
 infoWindow.mainloop()
